@@ -15,8 +15,8 @@ class Game {
         bool isRunning;
         bool isDebug;
         int millisecsPreviousFrame = 0;
-        SDL_Window* window;
-        SDL_Renderer* renderer;
+        SDL_Window* window = nullptr;
+        SDL_Renderer* renderer = nullptr;
         SDL_Rect camera;
 
         sol::state lua;

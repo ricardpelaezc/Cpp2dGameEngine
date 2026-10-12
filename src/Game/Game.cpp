@@ -1,4 +1,4 @@
-#include "./Game.h"
+﻿#include "./Game.h"
 #include "./LevelLoader.h"
 #include "../Logger/Logger.h"
 #include "../ECS/ECS.h"
@@ -196,9 +196,17 @@ void Game::Run() {
 }
 
 void Game::Destroy() {
-    ImGuiSDL::Deinitialize();
+    assetStore->ClearAssets();          // textures need the renderer, fonts need TTF
+    Logger::Log("Assets destroyed.");
+    ImGuiSDL::Deinitialize();           // uses the renderer
     ImGui::DestroyContext();
-    SDL_DestroyRenderer(renderer);
+    Logger::Log("ImGui destroyed.");
+    SDL_DestroyRenderer(renderer);      // created after the window → destroyed before it
+    Logger::Log("Renderer destroyed.");
     SDL_DestroyWindow(window);
+    Logger::Log("Window destroyed.");
+    TTF_Quit();
+    Logger::Log("TTF destroyed.");
     SDL_Quit();
+    Logger::Log("SDL destroyed.");
 }
