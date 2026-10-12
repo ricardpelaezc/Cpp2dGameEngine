@@ -25,17 +25,37 @@ void AssetStore::ClearAssets() {
 
 void AssetStore::AddTexture(SDL_Renderer* renderer, const std::string& assetId, const std::string& filePath) {
     SDL_Surface* surface = IMG_Load(filePath.c_str());
+    if (!surface) {
+        Logger::Err("Failed to load image '" + filePath + "': " + IMG_GetError());
+        return;
+    }
+
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
+    SDL_FreeSurface(surface); //freed on EVERY path from here on
+    if (!texture) {
+        Logger::Err("Failed to create texture '" + assetId + "': " + SDL_GetError());
+        return;
+    }
 
-    // Add the texture to the map
+    auto it = textures.find(assetId);
+    if (it != textures.end()) {                   
+        SDL_DestroyTexture(it->second);//free the OLD texture
+        it->second = texture;//store the new one in its place
+        Logger::Log("Texture replaced in the AssetStore with id " + assetId);
+        return;
+    }
+
     textures.emplace(assetId, texture);
-
     Logger::Log("Texture added to the AssetStore with id " + assetId);
 }
 
 SDL_Texture* AssetStore::GetTexture(const std::string& assetId) {
-    return textures[assetId];
+    auto it = textures.find(assetId);             
+    if (it == textures.end()) {
+        Logger::Err("Texture not found: " + assetId);//log FIRST
+        return nullptr;
+    }
+    return it->second;
 }
 
 void AssetStore::AddFont(const std::string& assetId, const std::string& filePath, int fontSize) {
