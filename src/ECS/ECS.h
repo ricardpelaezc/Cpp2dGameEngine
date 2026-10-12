@@ -81,7 +81,7 @@ class System {
 
     public:
         System() = default;
-        ~System() = default;
+        virtual ~System() = default;
         
         void AddEntityToSystem(Entity entity);
         void RemoveEntityFromSystem(Entity entity);
